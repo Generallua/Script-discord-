@@ -1,0 +1,41 @@
+_G.test2 = true 
+while _G.test2 do wait(0.1)
+    local TweenService = game:GetService("TweenService")
+    local players = game:GetService("Players")
+    local client = players.LocalPlayer
+    local enemyfolder = workspace:WaitForChild("Enemies")
+    local speed = 300
+
+    local function MoveEnemyAbovePlayer(enemy)
+        if enemy:FindFirstChild("HumanoidRootPart") then
+            local distance = client:DistanceFromCharacter(enemy.HumanoidRootPart.Position)
+            if distance <= 60 then
+                local targetPosition = client.Character.HumanoidRootPart.Position + Vector3.new(0, 30, 0)
+                local timeToReach = distance / speed
+
+                local tweenInfo = TweenInfo.new(
+                    timeToReach, 
+                    Enum.EasingStyle.Linear, 
+                    Enum.EasingDirection.Out, 
+                    0, 
+                    false, 
+                    0
+                )
+
+                local goal = {CFrame = CFrame.new(targetPosition)}
+                local tween = TweenService:Create(enemy.HumanoidRootPart, tweenInfo, goal)
+                tween:Play()
+            end
+        end
+    end
+
+    local function MoveNearbyEnemies()
+        if client.Character and client.Character:FindFirstChildOfClass("Tool") then
+            for _, enemy in pairs(enemyfolder:GetChildren()) do
+                MoveEnemyAbovePlayer(enemy)
+            end
+        end
+    end
+
+    MoveNearbyEnemies()
+end
